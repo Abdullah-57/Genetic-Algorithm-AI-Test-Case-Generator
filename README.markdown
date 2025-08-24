@@ -1,16 +1,10 @@
 # Genetic Algorithm for Automated Test Case Generation
 
-This repository contains the implementation of a Genetic Algorithm (GA) for automated test case generation, developed as part of the **Applied Artificial Intelligence** course (Assignment 2) at FAST – National University of Computer & Emerging Sciences, Islamabad Campus. The GA optimizes test cases for date validation, ensuring coverage of valid, invalid, and boundary cases, and is compared against random testing to evaluate efficiency.
+This repository contains the implementation of a Genetic Algorithm (GA) for automated test case generation. The GA optimizes test cases for date validation, ensuring coverage of valid, invalid, and boundary cases, and is compared against random testing to evaluate efficiency.
 
 ## Project Overview
 
 **Objective**: Implement a Genetic Algorithm to generate optimized test cases for date validation, covering valid dates, invalid dates, and boundary conditions, and compare its performance with random testing.
-
-**Course**: Applied Artificial Intelligence (Spring 2025)  
-**Instructor**: Dr. Atif Jilani  
-**Submitted by**: Abdullah Daoud (22I-2626)  
-**Section**: SE-E  
-**Institution**: FAST-NUCES, Islamabad Campus
 
 ## Features
 
@@ -111,8 +105,3 @@ Contributions to enhance the GA or add new features are welcome:
 
 ## License
 MIT License - see `LICENSE` for details.
-
-## Contact
-- **Author**: Abdullah Daoud (22I-2626)
-- **Instructor**: Dr. Atif Jilani
-- **Institution**: FAST-NUCES, Islamabad Campus
