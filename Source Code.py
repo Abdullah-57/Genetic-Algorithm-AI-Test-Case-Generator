@@ -1,0 +1,267 @@
+import random
+import json
+import csv
+import matplotlib.pyplot as plt
+
+# Function to check if a date is valid
+def is_valid_date(day, month, year):
+    if month < 1 or month > 12:
+        return False
+    
+    days_in_month = [31, 29 if (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)) else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    
+    if day < 1 or day > days_in_month[month - 1]:
+        return False
+    
+    return True
+
+# Categorizing test cases for Fitness Calculation in Genetic Algorithm
+def categorize_date(day, month, year):
+    if is_valid_date(day, month, year):
+        if month == 2 and day == 29:
+            return "Valid - Leap Year"
+        elif month in [4, 6, 9, 11] and day == 30:
+            return "Valid - 30-day Month"
+        elif day == 31:
+            return "Valid - 31-day Month"
+        elif month == 2 and day == 28:
+            return "Valid - February 28"
+        return "Valid - General"
+    else:
+        if day > 31:
+            return "Invalid - Day > 31"
+        elif month > 12:
+            return "Invalid - Month > 12"
+        elif month == 2 and day == 29 and not (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)):
+            return "Invalid - Non-Leap February 29"
+        elif day < 1:
+            return "Invalid - Day < 1"
+        elif month < 1:
+            return "Invalid - Month < 1"
+        elif year < 0 or year > 9999:
+            return "Invalid - Year Out of Bounds"
+        return "Invalid - General"
+    
+# Identifying boundary cases
+def is_boundary(day, month, year):
+    if year == 0:
+        return "Boundary - Min Year"
+    elif year == 9999:
+        return "Boundary - Max Year"
+    elif (day, month) in [(1, 1), (31, 12)]:
+        return "Boundary - Day/Month Transition"
+    return None
+
+# Generating a random date
+def random_date():
+    day = random.randint(1, 35)
+    month = random.randint(1, 15)
+    year = random.randint(0, 9999)
+    return (day, month, year)
+
+# Rank-based selection
+def rank_selection(population, fitness_scores):
+    sorted_population = [x for _, x in sorted(zip(fitness_scores, population), reverse=True)]
+    return sorted_population[:len(population)//2]  # Top 50% selected
+
+# Crossover (One-Point)
+def crossover(parent1, parent2):
+    child1 = (parent1[0], parent2[1], parent1[2])  # Swap month
+    child2 = (parent2[0], parent1[1], parent2[2])  # Swap year
+    return child1, child2
+
+# Mutation
+def mutate(date):
+    if random.random() < 0.15:
+        day, month, year = date
+        day = max(1, min(35, day + random.choice([-3, 0, 3])))
+        month = max(1, min(15, month + random.choice([-1, 0, 1])))
+        year = max(0, min(9999, year + random.choice([-100, 0, 100])))
+        return (day, month, year)
+    return date
+
+# Genetic Algorithm
+def genetic_algorithm():
+    population_size = 100
+    generations = 100
+    termination_coverage = 0.95
+    
+    population = [random_date() for _ in range(population_size)]
+    best_cases = {"Valid": [], "Invalid": [], "Boundary": []}
+    coverage_progress = []
+    
+    for generation in range(generations):
+        new_population = []
+        print(f"\nGeneration {generation+1}:")
+        covered_categories = set()
+        # Fitness Calculation based on categories of dates
+        for date in population:
+            day, month, year = date
+            category = categorize_date(day, month, year)
+            boundary_category = is_boundary(day, month, year)
+            
+            print(f"Generated: {category} - {day}/{month}/{year}")
+            covered_categories.add(category)
+            
+            if "Valid" in category and len(best_cases["Valid"]) < 10:
+                best_cases["Valid"].append((category, day, month, year))
+            elif "Invalid" in category and len(best_cases["Invalid"]) < 10:
+                best_cases["Invalid"].append((category, day, month, year))
+            
+            if boundary_category and len(best_cases["Boundary"]) < 5:
+                best_cases["Boundary"].append((boundary_category, day, month, year))
+            
+            new_population.append(date)
+        
+        coverage = (len(best_cases["Valid"]) + len(best_cases["Invalid"]) + len(best_cases["Boundary"])) / 25
+        coverage_progress.append(coverage * 100)
+        print(f"Coverage Achieved: {coverage * 100}%")
+        print(f"Categories Covered: {covered_categories}")
+        
+        if coverage >= termination_coverage:
+            break
+        
+        selected = rank_selection(new_population, [random.random() for _ in new_population])
+        next_population = []
+        while len(next_population) < population_size:
+            parent1, parent2 = random.sample(selected, 2)
+            child1, child2 = crossover(parent1, parent2)
+            next_population.extend([mutate(child1), mutate(child2)])
+        
+        population = next_population[:population_size]
+    
+    return best_cases, coverage_progress
+
+# Local Search Algorithm to refine test cases generated by Genetic Algorithm
+def local_search(best_cases):
+    refined_cases = {"Valid": [], "Invalid": [], "Boundary": []}
+    
+    for category, cases in best_cases.items():
+        for desc, day, month, year in cases:
+            if "Valid" in category:
+                refined_cases["Valid"].append((desc, max(1, day - 1), month, year))
+                refined_cases["Valid"].append((desc, min(31, day + 1), month, year))
+            elif "Invalid" in category:
+                refined_cases["Invalid"].append((desc, min(35, day + 1), month, year))
+            elif "Boundary" in category:
+                refined_cases["Boundary"].append((desc, day, month, max(0, year - 1)))
+                refined_cases["Boundary"].append((desc, day, month, min(9999, year + 1)))
+    return refined_cases
+
+# Run GA and get results
+best_test_cases, coverage_progress = genetic_algorithm()
+refined_test_cases = local_search(best_test_cases)
+
+# Random Testing Approach
+def random_testing(num_tests=25):
+    test_cases = {"Valid": [], "Invalid": [], "Boundary": []}
+    
+    for _ in range(num_tests):
+        day, month, year = random.randint(1, 35), random.randint(1, 15), random.randint(0, 9999)
+        category = categorize_date(day, month, year)
+        boundary_category = is_boundary(day, month, year)
+        
+        if "Valid" in category and len(test_cases["Valid"]) < 10:
+            test_cases["Valid"].append((category, day, month, year))
+        elif "Invalid" in category and len(test_cases["Invalid"]) < 10:
+            test_cases["Invalid"].append((category, day, month, year))
+        if boundary_category and len(test_cases["Boundary"]) < 5:
+            test_cases["Boundary"].append((boundary_category, day, month, year))
+    
+    return test_cases
+
+# Comparing GA vs Random Testing
+def compare_ga_vs_random():
+    num_tests = 25
+    
+    # Run GA
+    ga_coverage = (len(best_test_cases["Valid"]) + len(best_test_cases["Invalid"]) + len(best_test_cases["Boundary"])) / 25 * 100
+    
+    # Run Random Testing
+    random_test_cases = random_testing(num_tests)
+    random_coverage = (len(random_test_cases["Valid"]) + len(random_test_cases["Invalid"]) + len(random_test_cases["Boundary"])) / 25 * 100
+    
+    # Print Results
+    print(f"\nGA Coverage: {ga_coverage:.2f}%")
+    print(f"Random Testing Coverage: {random_coverage:.2f}%")
+    
+    print("\nRandom Testing Valid Cases:")
+    for case in random_test_cases["Valid"]:
+        print(case)
+    
+    print("\nRandom Testing Invalid Cases:")
+    for case in random_test_cases["Invalid"]:
+        print(case)
+    
+    print("\nRandom Testing Boundary Cases:")
+    for case in random_test_cases["Boundary"]:
+        print(case)
+
+# Run GA vs Random Testing Comparison
+compare_ga_vs_random()
+
+# Save results to CSV
+def save_to_csv(best_cases):
+    with open("best_test_cases.csv", "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Category", "Day", "Month", "Year"])
+        for category in best_cases:
+            for test_case in best_cases[category]:
+                writer.writerow(test_case)
+
+save_to_csv(best_test_cases)
+
+# Save results to JSON
+def save_to_json(best_cases):
+    with open("best_test_cases.json", "w") as file:
+        json.dump(best_cases, file, indent=4)
+
+save_to_json(best_test_cases)
+
+# Save Local Search Results
+def save_refined_results(refined_cases):
+    with open("refined_test_cases.csv", "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["Category", "Day", "Month", "Year"])
+        for category in refined_cases:
+            for test_case in refined_cases[category]:
+                writer.writerow(test_case)
+
+save_refined_results(refined_test_cases)
+
+# Display best test cases on console
+print("\nBest Valid Cases:")
+for case in best_test_cases["Valid"]:
+    print(case)
+
+print("\nBest Invalid Cases:")
+for case in best_test_cases["Invalid"]:
+    print(case)
+
+print("\nBest Boundary Cases:")
+for case in best_test_cases["Boundary"]:
+    print(case)
+
+# Display refined test cases on console
+print("\nRefined Valid Cases:")
+for case in refined_test_cases["Valid"]:
+    print(case)
+
+print("\nRefined Invalid Cases:")
+for case in refined_test_cases["Invalid"]:
+    print(case)
+
+print("\nRefined Boundary Cases:")
+for case in refined_test_cases["Boundary"]:
+    print(case)
+
+
+# Graph to show coverage improvement
+def plot_coverage(coverage_progress):
+    plt.plot(range(len(coverage_progress)), coverage_progress, marker='o', linestyle='-')
+    plt.xlabel("Generation")
+    plt.ylabel("Coverage %")
+    plt.title("Genetic Algorithm Coverage Progress")
+    plt.show()
+
+plot_coverage(coverage_progress)

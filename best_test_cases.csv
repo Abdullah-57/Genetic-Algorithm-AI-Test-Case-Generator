@@ -1,0 +1,25 @@
+Category,Day,Month,Year
+Valid - General,10,4,6187
+Valid - General,25,12,8449
+Valid - General,10,9,9731
+Valid - General,26,2,1136
+Valid - General,9,11,9920
+Valid - General,3,9,8184
+Valid - General,26,12,4252
+Valid - General,26,10,2020
+Valid - General,28,10,707
+Valid - 30-day Month,30,9,1335
+Invalid - Day > 31,35,7,7496
+Invalid - Day > 31,34,6,8062
+Invalid - Month > 12,18,15,8328
+Invalid - Month > 12,21,13,9055
+Invalid - Month > 12,16,14,3451
+Invalid - Day > 31,33,10,3397
+Invalid - Month > 12,31,13,7404
+Invalid - Day > 31,33,3,7609
+Invalid - Month > 12,21,15,8269
+Invalid - Month > 12,14,13,7196
+Boundary - Max Year,17,15,9999
+Boundary - Day/Month Transition,1,1,2365
+Boundary - Day/Month Transition,1,1,5515
+Boundary - Day/Month Transition,1,1,2365

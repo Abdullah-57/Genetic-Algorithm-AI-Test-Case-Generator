@@ -1,0 +1,39 @@
+Category,Day,Month,Year
+Valid - General,9,4,6187
+Valid - General,11,4,6187
+Valid - General,24,12,8449
+Valid - General,26,12,8449
+Valid - General,9,9,9731
+Valid - General,11,9,9731
+Valid - General,25,2,1136
+Valid - General,27,2,1136
+Valid - General,8,11,9920
+Valid - General,10,11,9920
+Valid - General,2,9,8184
+Valid - General,4,9,8184
+Valid - General,25,12,4252
+Valid - General,27,12,4252
+Valid - General,25,10,2020
+Valid - General,27,10,2020
+Valid - General,27,10,707
+Valid - General,29,10,707
+Valid - 30-day Month,29,9,1335
+Valid - 30-day Month,31,9,1335
+Invalid - Day > 31,35,7,7496
+Invalid - Day > 31,35,6,8062
+Invalid - Month > 12,19,15,8328
+Invalid - Month > 12,22,13,9055
+Invalid - Month > 12,17,14,3451
+Invalid - Day > 31,34,10,3397
+Invalid - Month > 12,32,13,7404
+Invalid - Day > 31,34,3,7609
+Invalid - Month > 12,22,15,8269
+Invalid - Month > 12,15,13,7196
+Boundary - Max Year,17,15,9998
+Boundary - Max Year,17,15,9999
+Boundary - Day/Month Transition,1,1,2364
+Boundary - Day/Month Transition,1,1,2366
+Boundary - Day/Month Transition,1,1,5514
+Boundary - Day/Month Transition,1,1,5516
+Boundary - Day/Month Transition,1,1,2364
+Boundary - Day/Month Transition,1,1,2366
